@@ -1,12 +1,12 @@
 //Name:
 //ID:
 
-module test_exp9; 
+module test_exp10; 
  reg clk, reset, enable; 
  PipelinedProcessor p(clk, reset, enable);
 
  initial begin : stop_at 
- #(120*26 ); $finish ;
+ #(120*27 ); $finish ;
 
  end 
 
