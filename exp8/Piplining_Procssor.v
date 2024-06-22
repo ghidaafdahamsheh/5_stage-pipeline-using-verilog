@@ -17,8 +17,8 @@ input clk, reset, enable;
 
  Mux_2_to_1_32bit mux1 (omux1, muxsel1, bta , pc4f);  
  Mux_2_to_1_32bit mux2 (PCin, pcsrc1e, result , omux1); 
- OR3 flush1(Flush1, pcsrc1e, muxsel1, reset);
- IFID fd({pc4d,PCoutd,instr}, {pc4f,PCout,instrf}, clk, Flush1, enable);
+
+ IFID fd({pc4d,PCoutd,instr}, {pc4f,PCout,instrf}, clk, reset, enable);
 
 ///d
  ControlUnit cu(aluop, alusrc, pcsrc, memtoreg, regwrite ,memread, memwrite, branch, Iformat, LW, SW, BEQ, JAL, JALR,instr[6:0], instr[14:12], instr[31:25]);
@@ -30,8 +30,8 @@ input clk, reset, enable;
  AND and1 (inor, branch, equal);
  ShiftLeft32_by1 shift (SEoutshift, SEout); 
  Adder32bit adder (bta, SEoutshift, PCoutd);
- OR flush2(Flush2, pcsrc1e, reset);
- IDEX dx({pc4e,pcsrc1e,regwritee,memtorege,memwritee,memreade,aluope,alusrce,readdata1e ,readdata2e,SEoute, IDEX_Rs2,IDEX_Rs1,writerege}, {pc4d,pcsrc[1],regwrite,memtoreg,memwrite,memread,aluop,alusrc,readdata1 ,readdata2,SEout,instr[24:20],instr[19:15],instr[11:7]}, clk, Flush2, enable);
+
+ IDEX dx({pc4e,pcsrc1e,regwritee,memtorege,memwritee,memreade,aluope,alusrce,readdata1e ,readdata2e,SEoute, IDEX_Rs2,IDEX_Rs1,writerege}, {pc4d,pcsrc[1],regwrite,memtoreg,memwrite,memread,aluop,alusrc,readdata1 ,readdata2,SEout,instr[24:20],instr[19:15],instr[11:7]}, clk, reset, enable);
 
 ////E 
  
@@ -43,7 +43,7 @@ input clk, reset, enable;
 // ALU_32(result, a, b, m);
   ALU_32  alu(result, ForA, outmux2, aluope);
   Mux_2_to_1_32bit mux(outmux2, alusrce, SEoute,ForB);
-  EXMEM xm({pc4m,regwritem,memtoregm,memwritem,memreadm,address,writedatam,writeregm}, {pc4e,regwritee,memtorege,memwritee,memreade,result,ForB,writerege}, clk, reset, enable);
+  EXMEM xm({pc4m,regwritem,memtoregm,memwritem,memreadm,address,writedatam,writeregm}, {pc4e,regwritee,memtorege,memwritee,memreade,result,readdata2e,writerege}, clk, reset, enable);
 
 ////mmm
  Data_Memory DM(r1 , address, writedatam, memwritem , memreadm, clk); 
@@ -51,7 +51,7 @@ input clk, reset, enable;
  MEMWB mw({pc4w,regwritew,memtoregw,r1w,addressm,writeregw}, {pc4m,regwritem,memtoregm,r1,address,writeregm}, clk, reset, enable);
 
 /////w
- Mux_3_to_1_32bit muxf(final, memtoregw,pc4w , r1w,addressm);
+ Mux_3_to_1_32bit muxf(final, memtoregw, addressm, r1w,pc4w);
 
 
 
